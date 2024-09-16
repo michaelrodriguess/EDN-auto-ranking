@@ -2,13 +2,12 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-// Tipo para os dados do ranking
 type RankingData = {
   name: string
   score: number
 }
 
-// Dados de exemplo (você deve substituir isso pelos dados reais)
+// Dados de exemplo (substituir isso pelos dados reais)
 const data: RankingData[] = [
   { name: 'Aluno A', score: 100 },
   { name: 'Aluno B', score: 95 },

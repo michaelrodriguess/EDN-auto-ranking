@@ -20,8 +20,8 @@ export default function RankingForm() {
     formData.append('topN', topN)
     formData.append('file', file)
 
-    // Aqui você implementaria a lógica para processar o CSV
-    // Por enquanto, vamos apenas simular um redirecionamento
+    // Implementar lógica para processar o CSV
+    // Por enquanto, está apenas simulando um redirecionamento
     router.push('/ranking')
   }
 
