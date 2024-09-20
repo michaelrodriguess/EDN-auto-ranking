@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import RankingChart from "../../components/RankingChart";
 
 interface Participant {
@@ -25,18 +26,27 @@ const mockData: Participant[] = [
     { name: "jacinto", score: 70 },
 ];
 
-const RankingPageContent: React.FC = () => {
+const RankingPageContent: React.FC<{
+    title: string;
+    teacherName: string;
+    topN: string;
+}> = ({ title, teacherName, topN }) => {
     const [data, setData] = useState<Participant[]>([]);
 
     useEffect(() => {
-        setData(mockData);
-    }, []);
+        setData(mockData.slice(0, parseInt(topN, 10) || 0));
+    }, [topN]);
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-r from-blue-500 to-cyan-500">
             <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg">
                 {data.length > 0 ? (
-                    <RankingChart data={data} />
+                    <RankingChart
+                        data={data}
+                        title={title}
+                        teacher={teacherName}
+                        podiumLimit={Number(topN)}
+                    />
                 ) : (
                     <p>Carregando...</p>
                 )}
@@ -46,5 +56,16 @@ const RankingPageContent: React.FC = () => {
 };
 
 export default function RankingPage() {
-    return <RankingPageContent />;
+    const searchParams = useSearchParams();
+    const title = searchParams.get("title") || "";
+    const teacherName = searchParams.get("teacherName") || "";
+    const topN = searchParams.get("topN") || "";
+
+    return (
+        <RankingPageContent
+            title={title}
+            teacherName={teacherName}
+            topN={topN}
+        />
+    );
 }
