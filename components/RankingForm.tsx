@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
+import { Dashboard } from "@uppy/react";
+import pt_BR from "@uppy/locales/lib/pt_BR";
+import "@uppy/core/dist/style.css";
+import "@uppy/dashboard/dist/style.css";
+import Uppy from "@uppy/core";
+import { FaCloudUploadAlt, FaUser, FaListAlt } from "react-icons/fa";
 
 interface CsvRow {
     Student: string;
@@ -13,20 +19,39 @@ export default function RankingForm() {
     const [title, setTitle] = useState("");
     const [teacherName, setTeacherName] = useState("");
     const [topN, setTopN] = useState("");
-    const [file, setFile] = useState<File | null>(null);
     const router = useRouter();
+    const [uppy, setUppy] = useState<Uppy | null>(null);
+
+    useEffect(() => {
+        const uppyInstance = new Uppy({
+            restrictions: {
+                maxNumberOfFiles: 1,
+                allowedFileTypes: [".csv"],
+            },
+            autoProceed: false,
+            locale: {
+                ...pt_BR,
+                strings: {
+                    ...pt_BR.strings,
+                    dropPasteFiles:
+                        "Solte o arquivo .csv aqui, cole ou %{browse}",
+                },
+            },
+        });
+        setUppy(uppyInstance);
+        return () => uppyInstance.cancelAll();
+    }, []);
 
     const handleFileParse = (file: File) => {
         Papa.parse(file, {
             complete: (result) => {
                 const data = result.data as CsvRow[];
                 console.log("Dados filtrados do CSV:");
-
                 data.forEach((row, index) => {
                     console.log(
-                        `Linha ${index + 1}: MemberNameI = ${
+                        `Linha ${index + 1}: Student = ${
                             row.Student
-                        }, ScoreIs = ${row["Current Score"]}`
+                        }, Current Score = ${row["Current Score"]}`
                     );
                 });
             },
@@ -37,95 +62,79 @@ export default function RankingForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file) return;
+        if (!uppy) return;
 
-        handleFileParse(file);
+        const files = uppy.getFiles();
+        if (files.length > 0) {
+            const file = files[0].data as File;
+            handleFileParse(file);
 
-        const queryString = new URLSearchParams({
-            title,
-            teacherName,
-            topN,
-        }).toString();
-
-        router.push(`/ranking?${queryString}`);
+            const queryString = new URLSearchParams({
+                title,
+                teacherName,
+                topN,
+            }).toString();
+            router.push(`/ranking?${queryString}`);
+        }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4 ">
-            <div className="border-2 rounded-lg p-2">
-                <div className="mb-4 mt-2">
-                    <label
-                        htmlFor="title"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Título da Turma
-                    </label>
-                    <input
-                        type="text"
-                        id="title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                        placeholder="Ex: AWS re:Start - 1"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-2"
-                    />
-                </div>
-                <div className="mb-4 mt-2">
-                    <label
-                        htmlFor="teacherName"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Professor(a)
-                    </label>
-                    <input
-                        type="text"
-                        id="teacherName"
-                        value={teacherName}
-                        onChange={(e) => setTeacherName(e.target.value)}
-                        required
-                        placeholder="Nome do professor"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-2"
-                    />
-                </div>
-                <div className="mb-4 mt-2">
-                    <label
-                        htmlFor="topN"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Quantas devem aparecer no ranking?
-                    </label>
-                    <input
-                        type="number"
-                        id="topN"
-                        value={topN}
-                        onChange={(e) => setTopN(e.target.value)}
-                        required
-                        min="1"
-                        placeholder="Número de colunas"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-2"
-                    />
-                </div>
-                <div className="mb-4 mt-2">
-                    <div className="mt-1">
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="border-2 rounded-lg p-4 bg-gray-50">
+                <div className="mb-4">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 transition duration-200 ease-in-out">
+                        <FaListAlt className="mr-2 text-gray-500" />
                         <input
-                            type="file"
-                            id="file"
-                            accept=".csv"
-                            onChange={(e) =>
-                                setFile(e.target.files?.[0] || null)
-                            }
-                            required
-                            className="hidden"
+                            type="text"
+                            id="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Título da Turma (Ex: AWS re:Start - 1)"
+                            className="mt-1 block w-full bg-transparent border-none focus:outline-none focus:ring-0"
                         />
-                        <label
-                            htmlFor="file"
-                            className="flex items-center justify-center w-full py-2 px-4 border border-dashed border-blue-500 rounded-md text-blue-500 cursor-pointer hover:bg-blue-50 transition"
-                        >
-                            {file
-                                ? file.name
-                                : "Clique para fazer upload do arquivo CSV"}
-                        </label>
                     </div>
+                </div>
+                <div className="mb-4">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 transition duration-200 ease-in-out">
+                        <FaUser className="mr-2 text-gray-500" />
+                        <input
+                            type="text"
+                            id="teacherName"
+                            value={teacherName}
+                            onChange={(e) => setTeacherName(e.target.value)}
+                            placeholder="Nome do professor(a)"
+                            className="mt-1 block w-full bg-transparent border-none focus:outline-none focus:ring-0"
+                        />
+                    </div>
+                </div>
+                <div className="mb-4">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 transition duration-200 ease-in-out">
+                        <FaListAlt className="mr-2 text-gray-500" />
+                        <input
+                            type="number"
+                            id="topN"
+                            value={topN}
+                            onChange={(e) => setTopN(e.target.value)}
+                            min="1"
+                            placeholder="Quantas colunas vão aparecer no ranking?"
+                            className="mt-1 block w-full bg-transparent border-none focus:outline-none focus:ring-0"
+                        />
+                    </div>
+                </div>
+                <div className="mb-4">
+                    <label className="relative left-2 text-gray-500">
+                        <FaCloudUploadAlt />
+                    </label>
+                    {uppy && (
+                        <Dashboard
+                            uppy={uppy}
+                            width="100%"
+                            height={100}
+                            hideUploadButton={true}
+                            proudlyDisplayPoweredByUppy={false}
+                            className="border border-gray-300 rounded-md bg-gray-100 p-2 transition duration-200 ease-in-out hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        />
+                    )}
                 </div>
             </div>
             <button

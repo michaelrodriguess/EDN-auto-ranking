@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import RankingChart from "../../components/RankingChart";
 
 interface Participant {
@@ -55,11 +54,14 @@ const RankingPageContent: React.FC<{
     );
 };
 
-export default function RankingPage() {
-    const searchParams = useSearchParams();
-    const title = searchParams.get("title") || "";
-    const teacherName = searchParams.get("teacherName") || "";
-    const topN = searchParams.get("topN") || "";
+export default function RankingPage({
+    searchParams,
+}: {
+    searchParams: { [key: string]: string | string[] | undefined };
+}) {
+    const title = (searchParams.title as string) || "";
+    const teacherName = (searchParams.teacherName as string) || "";
+    const topN = (searchParams.topN as string) || "";
 
     return (
         <RankingPageContent
