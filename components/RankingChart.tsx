@@ -27,9 +27,11 @@ const RankingChart: React.FC<RankingChartProps> = ({
                 Ranking da Escola da Nuvem
             </h1>
             {title && (
-                <h2 className="text-2xl font-semibold mb-2">Turma:{title}</h2>
+                <h2 className="text-2xl font-semibold mb-2">Turma: {title}</h2>
             )}
-            {teacher && <h3 className="text-xl mb-8">Professor(a){teacher}</h3>}
+            {teacher && (
+                <h3 className="text-xl mb-8">Professor(a): {teacher}</h3>
+            )}
             <AnimatedPodium data={data} podiumLimit={podiumLimit} />
         </div>
     );

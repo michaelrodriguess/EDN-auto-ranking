@@ -82,7 +82,7 @@ export default function RankingForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="border-2 rounded-lg p-4 bg-gray-50">
                 <div className="mb-4">
-                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 transition duration-200 ease-in-out">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out">
                         <FaListAlt className="mr-2 text-gray-500" />
                         <input
                             type="text"
@@ -95,7 +95,7 @@ export default function RankingForm() {
                     </div>
                 </div>
                 <div className="mb-4">
-                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 transition duration-200 ease-in-out">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out">
                         <FaUser className="mr-2 text-gray-500" />
                         <input
                             type="text"
@@ -108,7 +108,7 @@ export default function RankingForm() {
                     </div>
                 </div>
                 <div className="mb-4">
-                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 transition duration-200 ease-in-out">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out">
                         <FaListAlt className="mr-2 text-gray-500" />
                         <input
                             type="number"
@@ -116,7 +116,7 @@ export default function RankingForm() {
                             value={topN}
                             onChange={(e) => setTopN(e.target.value)}
                             min="1"
-                            placeholder="Quantas colunas vão aparecer no ranking?"
+                            placeholder="Quantas colunas devem aparecer no ranking?"
                             className="mt-1 block w-full bg-transparent border-none focus:outline-none focus:ring-0"
                         />
                     </div>
@@ -129,17 +129,17 @@ export default function RankingForm() {
                         <Dashboard
                             uppy={uppy}
                             width="100%"
-                            height={100}
+                            height={80}
                             hideUploadButton={true}
                             proudlyDisplayPoweredByUppy={false}
-                            className="border border-gray-300 rounded-md bg-gray-100 p-2 transition duration-200 ease-in-out hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            className="border border-gray-300 rounded-md bg-gray-100 p-2 transition duration-200 ease-in-out hover:bg-blue-100 hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                         />
                     )}
                 </div>
             </div>
             <button
                 type="submit"
-                className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
                 Gerar Ranking
             </button>
