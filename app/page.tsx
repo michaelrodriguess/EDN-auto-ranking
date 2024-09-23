@@ -19,7 +19,7 @@ export default function Home() {
                             objectFit="contain"
                         />
                     </a>
-                    <h2 className="text-2xl font-bold text-center text-blue-400 mt-2">
+                    <h2 className="text-2xl font-bold text-center text-gray-500 mt-2">
                         Ranking generator
                     </h2>
                 </header>

@@ -42,21 +42,33 @@ export default function RankingForm() {
         return () => uppyInstance.cancelAll();
     }, []);
 
-    const handleFileParse = (file: File) => {
-        Papa.parse(file, {
-            complete: (result) => {
-                const data = result.data as CsvRow[];
-                console.log("Dados filtrados do CSV:");
-                data.forEach((row, index) => {
-                    console.log(
-                        `Linha ${index + 1}: Student = ${
-                            row.Student
-                        }, Current Score = ${row["Current Score"]}`
+    const handleFileParse = (file: File): Promise<CsvRow[]> => {
+        return new Promise((resolve, reject) => {
+            Papa.parse(file, {
+                complete: (result) => {
+                    const data = result.data as CsvRow[];
+
+                    const isValidData = data.every(
+                        (row) => row.Student && row["Current Score"]
                     );
-                });
-            },
-            header: true,
-            skipEmptyLines: true,
+
+                    if (isValidData) {
+                        resolve(data);
+                    } else {
+                        const error = new Error(
+                            "Dados CSV inválidos. Verifique se as colunas 'Student' e 'Current Score' estão presentes."
+                        );
+                        console.error(error.message);
+                        reject(error);
+                    }
+                },
+                error: (error) => {
+                    console.error("Erro ao analisar o arquivo CSV:", error);
+                    reject(error);
+                },
+                header: true,
+                skipEmptyLines: true,
+            });
         });
     };
 
@@ -67,14 +79,33 @@ export default function RankingForm() {
         const files = uppy.getFiles();
         if (files.length > 0) {
             const file = files[0].data as File;
-            handleFileParse(file);
 
-            const queryString = new URLSearchParams({
-                title,
-                teacherName,
-                topN,
-            }).toString();
-            router.push(`/ranking?${queryString}`);
+            try {
+                const parsedData = await handleFileParse(file);
+
+                const participantsData = parsedData.slice(1).map((row) => ({
+                    name: row.Student,
+                    score: parseFloat(row["Current Score"]),
+                }));
+
+                localStorage.setItem(
+                    "participants",
+                    JSON.stringify(participantsData)
+                );
+
+                router.push(
+                    `/ranking?title=${encodeURIComponent(
+                        title
+                    )}&teacherName=${encodeURIComponent(
+                        teacherName
+                    )}&topN=${topN}`
+                );
+            } catch (error) {
+                console.error("Erro ao processar o arquivo CSV:", error);
+                alert(
+                    "Houve um erro ao processar o arquivo. Por favor, tente novamente."
+                );
+            }
         }
     };
 
