@@ -22,19 +22,9 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
     const baseHeight = 500;
     const heightDecrement = 20;
 
-    const groupedData: Participant[][] = sortedData.reduce(
-        (acc: Participant[][], curr) => {
-            const position =
-                acc.length === 0 || curr.score < acc[acc.length - 1][0].score
-                    ? acc.length + 1
-                    : acc.length;
-            if (!acc[position - 1]) {
-                acc[position - 1] = [];
-            }
-            acc[position - 1].push(curr);
-            return acc;
-        },
-        []
+    const displayData = sortedData.slice(
+        0,
+        Math.min(sortedData.length, podiumLimit)
     );
 
     const getIconForPosition = (position: number) => {
@@ -44,18 +34,13 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
             return <FaMedal className="text-gray-400" size={24} />;
         if (position === 2)
             return <FaMedal className="text-orange-400" size={24} />;
-
         return <PiHandsClappingDuotone className="text-pink-500" size={24} />;
     };
-
-    const displayData = Array.from({ length: podiumLimit }, (_, index) => {
-        return groupedData[index] || [{ name: "", score: 0 }];
-    });
 
     return (
         <div className="flex flex-col items-center w-full max-w-4xl mx-auto">
             <div className="flex justify-center items-end mb-8 w-full">
-                {displayData.map((group, index) => (
+                {displayData.map((participant, index) => (
                     <motion.div
                         key={index}
                         className="flex flex-col items-center mx-2"
@@ -90,60 +75,15 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                         >
                             <span className="text-white font-bold mb-1">
-                                {group[0].score > 0 ? `${group[0].score}%` : ""}
+                                {participant.score > 0
+                                    ? `${participant.score}%`
+                                    : ""}
                             </span>
                             <div className="w-full border border-white mb-2" />
-                            {group[0].name &&
-                                group
-                                    .sort((a, b) =>
-                                        a.name.localeCompare(b.name)
-                                    )
-                                    .map((participant, pIndex) => {
-                                        const formatName = (name: string) => {
-                                            const parts = name.split(" ");
-                                            if (parts.length === 1) {
-                                                return (
-                                                    parts[0]
-                                                        .charAt(0)
-                                                        .toUpperCase() +
-                                                    parts[0].slice(1)
-                                                );
-                                            } else {
-                                                const firstName = parts[0];
-                                                const lastNameInitial =
-                                                    parts[1]
-                                                        .charAt(0)
-                                                        .toUpperCase() + ".";
-                                                return `${
-                                                    firstName
-                                                        .charAt(0)
-                                                        .toUpperCase() +
-                                                    firstName.slice(1)
-                                                } ${lastNameInitial}`;
-                                            }
-                                        };
-
-                                        const formattedName = formatName(
-                                            participant.name
-                                        );
-                                        const truncatedName =
-                                            formattedName.length > 13
-                                                ? formattedName.slice(0, 13) +
-                                                  "..."
-                                                : formattedName;
-
-                                        return (
-                                            <span
-                                                key={`${index}-${pIndex}`}
-                                                className="text-white mb-1 flex items-center"
-                                            >
-                                                <span className="mr-2 text-xl">
-                                                    &#8226;
-                                                </span>
-                                                {truncatedName}
-                                            </span>
-                                        );
-                                    })}
+                            <span className="text-white mb-1 flex items-center">
+                                <span className="mr-2 text-xl">&#8226;</span>
+                                {participant.name}
+                            </span>
                         </motion.div>
                     </motion.div>
                 ))}
