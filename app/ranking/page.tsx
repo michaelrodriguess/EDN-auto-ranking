@@ -24,19 +24,29 @@ const RankingPageContent: React.FC<{
     }, []);
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-r from-blue-500 to-cyan-500">
-            <div className="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg">
-                {participants.length > 0 ? (
-                    <RankingChart
-                        data={participants}
-                        title={title}
-                        teacher={teacherName}
-                        podiumLimit={Number(topN)}
-                    />
-                ) : (
-                    <p>Carregando...</p>
-                )}
-            </div>
+        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-r from-blue-500 to-cyan-500 overflow-hidden">
+            {participants.length > 0 ? (
+                <>
+                    <div>
+                        <h1 className="text-3xl font-bold mb-2">
+                            Ranking da Escola da Nuvem
+                        </h1>
+                    </div>
+                    <section className="w-full max-w-fit p-8 bg-white rounded-lg shadow-lg flex flex-col items-center">
+                        <RankingChart
+                            data={participants}
+                            title={title}
+                            teacher={teacherName}
+                            podiumLimit={Number(topN)}
+                        />
+                    </section>
+                </>
+            ) : (
+                <div className="flex flex-col items-center">
+                    <div className="animate-spin rounded-full size-4 border-t-4 border-b-4 border-blue-500 mb-4"></div>
+                    <p className="text-xl">Carregando...</p>
+                </div>
+            )}
         </main>
     );
 };

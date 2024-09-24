@@ -10,83 +10,223 @@ interface Participant {
 
 interface AnimatedPodiumProps {
     data: Participant[];
-    podiumLimit: number;
+    podiumLimit?: number;
 }
 
 const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
     data,
-    podiumLimit,
+    podiumLimit = 3,
 }) => {
     const sortedData = [...data].sort((a, b) => b.score - a.score);
 
     const baseHeight = 500;
     const heightDecrement = 20;
+    const minHeight = 100;
 
-    const displayData = sortedData.slice(
-        0,
-        Math.min(sortedData.length, podiumLimit)
+    const groupedData: Participant[][] = sortedData.reduce(
+        (acc: Participant[][], curr) => {
+            const position =
+                acc.length === 0 || curr.score < acc[acc.length - 1][0].score
+                    ? acc.length + 1
+                    : acc.length;
+            if (!acc[position - 1]) {
+                acc[position - 1] = [];
+            }
+            acc[position - 1].push(curr);
+            return acc;
+        },
+        []
     );
 
     const getIconForPosition = (position: number) => {
         if (position === 0)
-            return <FaTrophy className="text-yellow-500" size={30} />;
+            return <FaTrophy className="text-[#FFD700]" size={30} />;
         if (position === 1)
             return <FaMedal className="text-gray-400" size={26} />;
         if (position === 2)
-            return <FaMedal className="text-orange-400" size={26} />;
-        return <PiHandsClappingDuotone className="text-pink-500" size={24} />;
+            return <FaMedal className="text-[#CE8946]" size={26} />;
+
+        return <PiHandsClappingDuotone className="text-green-800" size={24} />;
     };
 
+    const reorderPodium = (data: Participant[][], limit: number) => {
+        const reordered = new Array(limit);
+        const middleIndex = Math.floor(limit / 2);
+
+        reordered[middleIndex] = data[0];
+
+        let leftIndex = middleIndex - 1;
+        let rightIndex = middleIndex + 1;
+        let currentPosition = 1;
+
+        while (currentPosition < data.length) {
+            if (leftIndex >= 0) {
+                reordered[leftIndex] = data[currentPosition];
+                currentPosition++;
+                leftIndex--;
+            }
+            if (rightIndex < limit && currentPosition < data.length) {
+                reordered[rightIndex] = data[currentPosition];
+                currentPosition++;
+                rightIndex++;
+            }
+        }
+
+        for (let i = 0; i < limit; i++) {
+            if (!reordered[i]) {
+                reordered[i] = [];
+            }
+        }
+
+        return reordered;
+    };
+
+    const reorderedData = reorderPodium(
+        groupedData.slice(0, podiumLimit),
+        podiumLimit
+    );
+
     return (
-        <div className="flex flex-col items-center w-full max-w-4xl mx-auto">
-            <div className="flex justify-center items-end mb-8 w-full">
-                {displayData.map((participant, index) => (
-                    <motion.div
-                        key={index}
-                        className="flex flex-col items-center mx-2"
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                    >
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white bg-gray-200 flex items-center justify-center text-gray-700 font-bold mb-4">
-                            {getIconForPosition(index)}
-                        </div>
-                        <motion.div
-                            className="w-32 rounded-t-lg flex flex-col items-center justify-start p-2"
-                            style={{
-                                backgroundColor:
-                                    index === 0
-                                        ? "#FFD700"
-                                        : index === 1
-                                        ? "#C0C0C0"
-                                        : index === 2
-                                        ? "#CD7F32"
-                                        : "#FFC0CB",
-                                height: `${
-                                    baseHeight - index * heightDecrement
-                                }px`,
-                            }}
-                            initial={{ height: 0 }}
-                            animate={{
-                                height: `${
-                                    baseHeight - index * heightDecrement
-                                }px`,
-                            }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                        >
-                            <span className="text-white font-bold mb-1">
-                                {participant.score > 0
-                                    ? `${participant.score}%`
-                                    : ""}
-                            </span>
-                            <div className="w-full border border-white mb-2" />
-                            <span className="text-white mb-1 flex items-center">
-                                <span className="mr-2 text-xl">&#8226;</span>
-                                {participant.name}
-                            </span>
-                        </motion.div>
-                    </motion.div>
-                ))}
+        <div className="flex flex-col items-center w-full max-w-6xl mx-auto">
+            <div className="flex justify-center items-end mb-8 w-full overflow-x-auto">
+                {reorderedData
+                    .filter((group) => group.length > 0)
+                    .map((group, index) => {
+                        const originalIndex = groupedData.findIndex(
+                            (g) => g === group
+                        );
+                        const isMiddle = index === Math.floor(podiumLimit / 2);
+                        const distanceFromMiddle = Math.abs(
+                            index - Math.floor(podiumLimit / 2)
+                        );
+                        const podiumHeight = Math.max(
+                            isMiddle
+                                ? baseHeight
+                                : baseHeight -
+                                      distanceFromMiddle * heightDecrement,
+                            minHeight
+                        );
+
+                        return (
+                            <motion.div
+                                key={index}
+                                className="flex flex-col items-center mx-2 flex-shrink-0"
+                                initial={{ y: 100, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{
+                                    duration: 0.5,
+                                    delay: index * 0.1,
+                                }}
+                            >
+                                <div className="size-12 rounded-full overflow-hidden border-2 border-white bg-gray-200 flex items-center justify-center text-gray-700 font-bold mb-4">
+                                    {getIconForPosition(originalIndex)}
+                                </div>
+                                {group.length > 0 && (
+                                    <motion.div
+                                        className="w-24 sm:w-28 md:w-32 rounded-t-lg flex flex-col items-center justify-start p-2"
+                                        style={{
+                                            backgroundColor:
+                                                originalIndex === 0
+                                                    ? "#FFD700"
+                                                    : originalIndex === 1
+                                                    ? "#9CA3AF"
+                                                    : originalIndex === 2
+                                                    ? "#CE8946"
+                                                    : "#ECECA3",
+                                            height: `${podiumHeight}px`,
+                                        }}
+                                        initial={{ height: 0 }}
+                                        animate={{
+                                            height: `${podiumHeight}px`,
+                                        }}
+                                        transition={{
+                                            duration: 0.5,
+                                            delay: index * 0.1,
+                                        }}
+                                    >
+                                        <span className="text-white font-bold mb-1">
+                                            {group[0].score}%
+                                        </span>
+                                        <div className="w-full border border-white mb-2" />
+                                        {group
+                                            .sort(
+                                                (
+                                                    a: Participant,
+                                                    b: Participant
+                                                ) =>
+                                                    a.name.localeCompare(b.name)
+                                            )
+                                            .map(
+                                                (
+                                                    participant: Participant,
+                                                    pIndex: number
+                                                ) => {
+                                                    const formatName = (
+                                                        name: string
+                                                    ) => {
+                                                        const parts =
+                                                            name.split(" ");
+                                                        if (
+                                                            parts.length === 1
+                                                        ) {
+                                                            return (
+                                                                parts[0]
+                                                                    .charAt(0)
+                                                                    .toUpperCase() +
+                                                                parts[0].slice(
+                                                                    1
+                                                                )
+                                                            );
+                                                        } else {
+                                                            const firstName =
+                                                                parts[0];
+                                                            const lastNameInitial =
+                                                                parts[1]
+                                                                    .charAt(0)
+                                                                    .toUpperCase() +
+                                                                ".";
+                                                            return `${
+                                                                firstName
+                                                                    .charAt(0)
+                                                                    .toUpperCase() +
+                                                                firstName.slice(
+                                                                    1
+                                                                )
+                                                            } ${lastNameInitial}`;
+                                                        }
+                                                    };
+
+                                                    const formattedName =
+                                                        formatName(
+                                                            participant.name
+                                                        );
+                                                    const truncatedName =
+                                                        formattedName.length >
+                                                        10
+                                                            ? formattedName.slice(
+                                                                  0,
+                                                                  10
+                                                              ) + "..."
+                                                            : formattedName;
+
+                                                    return (
+                                                        <span
+                                                            key={`${index}-${pIndex}`}
+                                                            className="text-white mb-1 flex items-center text-xs sm:text-sm"
+                                                        >
+                                                            <span className="mr-1 text-lg">
+                                                                &#8226;
+                                                            </span>
+                                                            {truncatedName}
+                                                        </span>
+                                                    );
+                                                }
+                                            )}
+                                    </motion.div>
+                                )}
+                            </motion.div>
+                        );
+                    })}
             </div>
         </div>
     );
