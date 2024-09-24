@@ -29,11 +29,11 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
 
     const getIconForPosition = (position: number) => {
         if (position === 0)
-            return <FaTrophy className="text-yellow-500" size={24} />;
+            return <FaTrophy className="text-yellow-500" size={30} />;
         if (position === 1)
-            return <FaMedal className="text-gray-400" size={24} />;
+            return <FaMedal className="text-gray-400" size={26} />;
         if (position === 2)
-            return <FaMedal className="text-orange-400" size={24} />;
+            return <FaMedal className="text-orange-400" size={26} />;
         return <PiHandsClappingDuotone className="text-pink-500" size={24} />;
     };
 
