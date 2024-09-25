@@ -86,9 +86,14 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
         podiumLimit
     );
 
+    const containerWidth = Math.max(podiumLimit * 160, 800);
+
     return (
         <div className="flex flex-col items-center w-full max-w-6xl mx-auto">
-            <div className="flex justify-center items-end mb-8 w-full overflow-x-auto">
+            <div
+                className="flex justify-center items-end"
+                style={{ width: `${containerWidth}px` }}
+            >
                 {reorderedData
                     .filter((group) => group.length > 0)
                     .map((group, index) => {
@@ -110,7 +115,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                         return (
                             <motion.div
                                 key={index}
-                                className="flex flex-col items-center mx-2 flex-shrink-0"
+                                className="flex flex-col items-center mx-0.5 flex-shrink-0"
                                 initial={{ y: 100, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{
@@ -123,7 +128,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                                 </div>
                                 {group.length > 0 && (
                                     <motion.div
-                                        className="w-24 sm:w-28 md:w-32 rounded-t-lg flex flex-col items-center justify-start p-2"
+                                        className="w-24 sm:w-28 md:w-32 rounded-xl flex flex-col items-center justify-start p-2"
                                         style={{
                                             backgroundColor:
                                                 originalIndex === 0
@@ -212,7 +217,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                                                     return (
                                                         <span
                                                             key={`${index}-${pIndex}`}
-                                                            className="text-white mb-1 flex items-center text-xs sm:text-sm"
+                                                            className="text-gray-900 mb-1 flex items-center text-xs sm:text-sm"
                                                         >
                                                             <span className="mr-1 text-lg">
                                                                 &#8226;

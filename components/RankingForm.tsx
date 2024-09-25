@@ -113,7 +113,7 @@ export default function RankingForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="border-2 rounded-lg p-4 bg-gray-50">
                 <div className="mb-4">
-                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out text-black">
                         <FaListAlt className="mr-2 text-gray-500" />
                         <input
                             type="text"
@@ -126,7 +126,7 @@ export default function RankingForm() {
                     </div>
                 </div>
                 <div className="mb-4">
-                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out text-black">
                         <FaUser className="mr-2 text-gray-500" />
                         <input
                             type="text"
@@ -139,7 +139,7 @@ export default function RankingForm() {
                     </div>
                 </div>
                 <div className="mb-4">
-                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out">
+                    <div className="flex items-center border border-gray-300 rounded-md p-2 hover:bg-blue-100 hover:border-blue-400 transition duration-200 ease-in-out text-black">
                         <FaListAlt className="mr-2 text-gray-500" />
                         <input
                             type="number"
