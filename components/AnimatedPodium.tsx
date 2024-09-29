@@ -19,7 +19,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
 }) => {
     const sortedData = [...data].sort((a, b) => b.score - a.score);
 
-    const baseHeight = 500;
+    const baseHeight = 400;
     const heightDecrement = 20;
     const minHeight = 100;
 
@@ -86,14 +86,11 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
         podiumLimit
     );
 
-    const containerWidth = Math.max(podiumLimit * 160, 800);
+    const containerWidth = `${100 / podiumLimit}%`;
 
     return (
         <div className="flex flex-col items-center w-full max-w-6xl mx-auto">
-            <div
-                className="flex justify-center items-end"
-                style={{ width: `${containerWidth}px` }}
-            >
+            <div className="flex justify-center items-end w-full">
                 {reorderedData
                     .filter((group) => group.length > 0)
                     .map((group, index) => {
@@ -115,7 +112,8 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                         return (
                             <motion.div
                                 key={index}
-                                className="z-[9999] flex flex-col items-center mx-0.5 flex-shrink-0 -mt-28 w-auto"
+                                className="z-[9999] flex flex-col items-center mx-0.5 flex-shrink-0 mt-4"
+                                style={{ width: containerWidth }}
                                 initial={{ y: 100, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{
@@ -128,7 +126,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                                 </div>
                                 {group.length > 0 && (
                                     <motion.div
-                                        className="w-24 sm:w-28 md:w-32 rounded-xl flex flex-col items-center justify-start p-2"
+                                        className="w-20 sm:w-24 md:w-28 rounded-xl flex flex-col items-center justify-start p-2"
                                         style={{
                                             backgroundColor:
                                                 originalIndex === 0
