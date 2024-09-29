@@ -78,8 +78,8 @@ export default function RankingForm() {
                     }));
 
                     const queryParams = new URLSearchParams({
-                        title: encodeURIComponent(title),
-                        teacherName: encodeURIComponent(teacherName),
+                        title: title,
+                        teacherName: teacherName,
                         topN,
                         participants: JSON.stringify(participantsData),
                     }).toString();
