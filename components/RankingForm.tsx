@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse";
 import { Dashboard } from "@uppy/react";
@@ -20,94 +20,81 @@ export default function RankingForm() {
     const [teacherName, setTeacherName] = useState("");
     const [topN, setTopN] = useState("");
     const router = useRouter();
-    const [uppy, setUppy] = useState<Uppy | null>(null);
-
-    useEffect(() => {
-        const uppyInstance = new Uppy({
-            restrictions: {
-                maxNumberOfFiles: 1,
-                allowedFileTypes: [".csv"],
-            },
-            autoProceed: false,
-            locale: {
-                ...pt_BR,
-                strings: {
-                    ...pt_BR.strings,
-                    dropPasteFiles:
-                        "Solte o arquivo .csv aqui, cole ou %{browse}",
+    const [uppy] = useState(
+        () =>
+            new Uppy({
+                restrictions: {
+                    maxNumberOfFiles: 1,
+                    allowedFileTypes: [".csv"],
                 },
-            },
-        });
-        setUppy(uppyInstance);
-        return () => uppyInstance.cancelAll();
-    }, []);
+                autoProceed: false,
+                locale: {
+                    ...pt_BR,
+                    strings: {
+                        ...pt_BR.strings,
+                        dropPasteFiles:
+                            "Solte o arquivo .csv aqui, cole ou %{browse}",
+                    },
+                },
+            })
+    );
 
-    const handleFileParse = (file: File): Promise<CsvRow[]> => {
+    const handleFileParse = useCallback((file: File): Promise<CsvRow[]> => {
         return new Promise((resolve, reject) => {
             Papa.parse(file, {
                 complete: (result) => {
                     const data = result.data as CsvRow[];
-
                     const isValidData = data.every(
                         (row) => row.Student && row["Current Score"]
                     );
-
                     if (isValidData) {
                         resolve(data);
                     } else {
-                        const error = new Error(
-                            "Dados CSV inválidos. Verifique se as colunas 'Student' e 'Current Score' estão presentes."
+                        reject(
+                            new Error(
+                                "Dados CSV inválidos. Verifique se as colunas 'Student' e 'Current Score' estão presentes."
+                            )
                         );
-                        console.error(error.message);
-                        reject(error);
                     }
                 },
-                error: (error) => {
-                    console.error("Erro ao analisar o arquivo CSV:", error);
-                    reject(error);
-                },
+                error: reject,
                 header: true,
                 skipEmptyLines: true,
             });
         });
-    };
+    }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!uppy) return;
+    const handleSubmit = useCallback(
+        async (e: React.FormEvent) => {
+            e.preventDefault();
+            const files = uppy.getFiles();
+            if (files.length > 0) {
+                const file = files[0].data as File;
+                try {
+                    const parsedData = await handleFileParse(file);
+                    const participantsData = parsedData.slice(1).map((row) => ({
+                        name: row.Student,
+                        score: parseFloat(row["Current Score"]),
+                    }));
 
-        const files = uppy.getFiles();
-        if (files.length > 0) {
-            const file = files[0].data as File;
+                    const queryParams = new URLSearchParams({
+                        title: encodeURIComponent(title),
+                        teacherName: encodeURIComponent(teacherName),
+                        topN,
+                        participants: JSON.stringify(participantsData),
+                    }).toString();
 
-            try {
-                const parsedData = await handleFileParse(file);
-
-                const participantsData = parsedData.slice(1).map((row) => ({
-                    name: row.Student,
-                    score: parseFloat(row["Current Score"]),
-                }));
-
-                localStorage.setItem(
-                    "participants",
-                    JSON.stringify(participantsData)
-                );
-
-                router.push(
-                    `/ranking?title=${encodeURIComponent(
-                        title
-                    )}&teacherName=${encodeURIComponent(
-                        teacherName
-                    )}&topN=${topN}`
-                );
-            } catch (error) {
-                console.error("Erro ao processar o arquivo CSV:", error);
-                alert(
-                    "Houve um erro ao processar o arquivo. Por favor, tente novamente."
-                );
+                    router.push(`/ranking?${queryParams}`);
+                } catch (error) {
+                    console.error("Erro ao processar o arquivo CSV:", error);
+                    alert(
+                        "Houve um erro ao processar o arquivo. Por favor, tente novamente."
+                    );
+                }
             }
-        }
-    };
+        },
+        [uppy, handleFileParse, title, teacherName, topN, router]
+    );
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -156,16 +143,14 @@ export default function RankingForm() {
                     <label className="relative left-2 text-gray-500">
                         <FaCloudUploadAlt />
                     </label>
-                    {uppy && (
-                        <Dashboard
-                            uppy={uppy}
-                            width="100%"
-                            height={80}
-                            hideUploadButton={true}
-                            proudlyDisplayPoweredByUppy={false}
-                            className="border border-gray-300 rounded-md bg-gray-100 p-2 transition duration-200 ease-in-out hover:bg-blue-100 hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                        />
-                    )}
+                    <Dashboard
+                        uppy={uppy}
+                        width="100%"
+                        height={80}
+                        hideUploadButton={true}
+                        proudlyDisplayPoweredByUppy={false}
+                        className="border border-gray-300 rounded-md bg-gray-100 p-2 transition duration-200 ease-in-out hover:bg-blue-100 hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                    />
                 </div>
             </div>
             <button
