@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RankingChart from "../../components/RankingChart";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { AiOutlineLoading } from "react-icons/ai";
 
 interface Participant {
     name: string;
@@ -11,6 +12,7 @@ interface Participant {
 }
 
 const RankingPage: React.FC = () => {
+    const [loading, setLoading] = useState(true);
     const searchParams = useSearchParams();
     const title = searchParams.get("title") || "";
     const teacherName = searchParams.get("teacherName") || "";
@@ -20,6 +22,23 @@ const RankingPage: React.FC = () => {
     const participants: Participant[] = participantsData
         ? JSON.parse(decodeURIComponent(participantsData))
         : [];
+
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="flex flex-col items-center">
+                    <AiOutlineLoading className="animate-spin text-4xl text-blue-600" />
+                    <p className="mt-4 text-lg text-white">Carregando...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <main className="flex flex-col min-h-screen bg-gradient-to-r from-blue-500 to-cyan-500">
