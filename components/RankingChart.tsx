@@ -26,18 +26,18 @@ const RankingChart: React.FC<RankingChartProps> = ({
         <div className="w-full flex flex-col">
             <div className="w-full flex flex-col items-start mb-4">
                 {title && (
-                    <h2 className="text-xl text-black font-serif font-semibold flex items-center">
+                    <h2 className="text-xl text-black font-sans font-semibold">
                         {title}
                     </h2>
                 )}
                 {teacher && (
                     <h3 className="text-base font-mono text-black flex items-center">
-                        <LiaChalkboardTeacherSolid className="mr-2 text-black" />
+                        <LiaChalkboardTeacherSolid className="mr-2 size-8 text-black" />
                         {teacher}
                     </h3>
                 )}
             </div>
-            <div className="flex-grow w-full flex items-center justify-center p-1">
+            <div className="flex-grow w-full flex items-center justify-center p-2 ">
                 <AnimatedPodium data={data} podiumLimit={podiumLimit} />
             </div>
         </div>

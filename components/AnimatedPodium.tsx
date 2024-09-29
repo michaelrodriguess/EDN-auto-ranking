@@ -115,7 +115,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                         return (
                             <motion.div
                                 key={index}
-                                className="flex flex-col items-center mx-0.5 flex-shrink-0"
+                                className="z-[9999] flex flex-col items-center mx-0.5 flex-shrink-0 -mt-28 w-auto"
                                 initial={{ y: 100, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{
