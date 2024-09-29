@@ -147,7 +147,7 @@ export default function RankingForm() {
                             value={topN}
                             onChange={(e) => setTopN(e.target.value)}
                             min="1"
-                            placeholder="Quantas colunas devem aparecer no ranking?"
+                            placeholder="Quantidade de colunas?"
                             className="mt-1 block w-full bg-transparent border-none focus:outline-none focus:ring-0"
                         />
                     </div>
