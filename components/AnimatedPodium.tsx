@@ -86,10 +86,8 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
         podiumLimit
     );
 
-    const containerWidth = `${100 / podiumLimit}%`;
-
     return (
-        <div className="flex flex-col items-center w-full max-w-6xl mx-auto">
+        <div className="flex flex-col items-center w-full max-w-6xl ">
             <div className="flex justify-center items-end w-full">
                 {reorderedData
                     .filter((group) => group.length > 0)
@@ -112,8 +110,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                         return (
                             <motion.div
                                 key={index}
-                                className="z-[9999] flex flex-col items-center mx-0.5 flex-shrink-0 mt-4"
-                                style={{ width: containerWidth }}
+                                className="z-[9999] -mt-20 flex flex-col items-center mx-px flex-grow flex-1 min-w-0"
                                 initial={{ y: 100, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{
@@ -126,7 +123,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                                 </div>
                                 {group.length > 0 && (
                                     <motion.div
-                                        className="w-20 sm:w-24 md:w-28 rounded-xl flex flex-col items-center justify-start p-2"
+                                        className="w-full rounded-xl flex flex-col items-center justify-start p-2 border border-white border-opacity-30"
                                         style={{
                                             backgroundColor:
                                                 originalIndex === 0
@@ -147,7 +144,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                                             delay: index * 0.1,
                                         }}
                                     >
-                                        <span className="text-white font-bold mb-1">
+                                        <span className="text-white font-bold mb-1 text-sm sm:text-base">
                                             {group[0].score}%
                                         </span>
                                         <div className="w-full border border-white mb-2" />
@@ -215,9 +212,9 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                                                     return (
                                                         <span
                                                             key={`${index}-${pIndex}`}
-                                                            className="text-gray-900 mb-1 flex items-center text-xs sm:text-sm"
+                                                            className="text-gray-900 mb-1 flex items-center text-xs"
                                                         >
-                                                            <span className="mr-1 text-lg">
+                                                            <span className="mr-1 text-base">
                                                                 &#8226;
                                                             </span>
                                                             {truncatedName}

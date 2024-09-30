@@ -24,7 +24,7 @@ const RankingChart: React.FC<RankingChartProps> = ({
 }) => {
     return (
         <div className="w-full flex flex-col">
-            <div className="w-full flex flex-col items-start mb-4">
+            <div className="w-full flex flex-col items-start">
                 {title && (
                     <h2 className="text-xl text-black font-sans font-semibold">
                         {title}
