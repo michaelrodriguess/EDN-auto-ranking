@@ -51,8 +51,8 @@ const RankingPage: React.FC = () => {
                     <Image
                         src="/logo-edn.webp"
                         alt="Escola da Nuvem Logo"
-                        width={50}
-                        height={50}
+                        width={60}
+                        height={60}
                         objectFit="contain"
                     />
                 </a>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { FaTrophy, FaMedal } from "react-icons/fa";
 import { PiHandsClappingDuotone } from "react-icons/pi";
@@ -19,7 +19,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
 }) => {
     const sortedData = [...data].sort((a, b) => b.score - a.score);
 
-    const baseHeight = 400;
+    const baseHeight = 600;
     const heightDecrement = 20;
     const minHeight = 100;
 
@@ -86,9 +86,35 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
         podiumLimit
     );
 
+    const formatName = (name: string, maxChars: number) => {
+        const [lastName, rest] = name.split(",").map((part) => part.trim());
+        const nameParts = rest.split(" ");
+        const firstName = nameParts[0];
+        // const secondName = nameParts[1] || "";
+        const fullName = `${firstName} ${lastName} `.trim();
+
+        return fullName.length > maxChars
+            ? fullName.slice(0, maxChars) + "..."
+            : fullName;
+    };
+
+    const [maxChars, setMaxChars] = useState(10);
+    const podiumRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (podiumRef.current) {
+            const columnWidth = podiumRef.current.offsetWidth / podiumLimit;
+            const newMaxChars = Math.floor(columnWidth / 8);
+            setMaxChars(newMaxChars);
+        }
+    }, [podiumLimit, reorderedData]);
+
     return (
         <div className="flex flex-col items-center w-full max-w-6xl ">
-            <div className="flex justify-center items-end w-full">
+            <div
+                ref={podiumRef}
+                className="flex justify-center items-end w-full"
+            >
                 {reorderedData
                     .filter((group) => group.length > 0)
                     .map((group, index) => {
@@ -110,7 +136,7 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                         return (
                             <motion.div
                                 key={index}
-                                className="z-[9999] -mt-20 flex flex-col items-center mx-px flex-grow flex-1 min-w-0"
+                                className="z-[9999] -mt-16 flex flex-col items-center mx-px flex-grow flex-1 min-w-0"
                                 initial={{ y: 100, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{
@@ -161,63 +187,21 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
                                                     participant: Participant,
                                                     pIndex: number
                                                 ) => {
-                                                    const formatName = (
-                                                        name: string
-                                                    ) => {
-                                                        const parts =
-                                                            name.split(" ");
-                                                        if (
-                                                            parts.length === 1
-                                                        ) {
-                                                            return (
-                                                                parts[0]
-                                                                    .charAt(0)
-                                                                    .toUpperCase() +
-                                                                parts[0].slice(
-                                                                    1
-                                                                )
-                                                            );
-                                                        } else {
-                                                            const firstName =
-                                                                parts[0];
-                                                            const lastNameInitial =
-                                                                parts[1]
-                                                                    .charAt(0)
-                                                                    .toUpperCase() +
-                                                                ".";
-                                                            return `${
-                                                                firstName
-                                                                    .charAt(0)
-                                                                    .toUpperCase() +
-                                                                firstName.slice(
-                                                                    1
-                                                                )
-                                                            } ${lastNameInitial}`;
-                                                        }
-                                                    };
-
                                                     const formattedName =
                                                         formatName(
-                                                            participant.name
+                                                            participant.name,
+                                                            maxChars
                                                         );
-                                                    const truncatedName =
-                                                        formattedName.length >
-                                                        10
-                                                            ? formattedName.slice(
-                                                                  0,
-                                                                  10
-                                                              ) + "..."
-                                                            : formattedName;
 
                                                     return (
                                                         <span
                                                             key={`${index}-${pIndex}`}
-                                                            className="text-gray-900 mb-1 flex items-center text-xs"
+                                                            className="text-gray-900 mb-1 flex items-center text-base"
                                                         >
                                                             <span className="mr-1 text-base">
                                                                 &#8226;
                                                             </span>
-                                                            {truncatedName}
+                                                            {formattedName}
                                                         </span>
                                                     );
                                                 }
