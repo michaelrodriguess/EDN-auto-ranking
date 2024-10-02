@@ -90,7 +90,6 @@ const AnimatedPodium: React.FC<AnimatedPodiumProps> = ({
         const [lastName, rest] = name.split(",").map((part) => part.trim());
         const nameParts = rest.split(" ");
         const firstName = nameParts[0];
-        // const secondName = nameParts[1] || "";
         const fullName = `${firstName} ${lastName} `.trim();
 
         return fullName.length > maxChars

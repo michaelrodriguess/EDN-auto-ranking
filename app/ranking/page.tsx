@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import RankingChart from "../../components/RankingChart";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { AiOutlineLoading } from "react-icons/ai";
+import { RiScreenshot2Line } from "react-icons/ri";
+import { IoHomeOutline } from "react-icons/io5";
 
 interface Participant {
     name: string;
@@ -13,6 +16,8 @@ interface Participant {
 
 const RankingPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
+    const [isClient, setIsClient] = useState(false);
+    const router = useRouter();
     const searchParams = useSearchParams();
     const title = searchParams.get("title") || "";
     const teacherName = searchParams.get("teacherName") || "";
@@ -24,6 +29,7 @@ const RankingPage: React.FC = () => {
         : [];
 
     useEffect(() => {
+        setIsClient(true);
         setTimeout(() => {
             setLoading(false);
         }, 2000);
@@ -40,13 +46,27 @@ const RankingPage: React.FC = () => {
         );
     }
 
+    const handleRedirectToHome = () => {
+        if (isClient) {
+            router.push("/");
+        }
+    };
+
     return (
         <main className="flex flex-col min-h-screen bg-gradient-to-r from-blue-500 to-cyan-500">
-            <div className="fixed top-0 left-0 w-full shadow-sm z-10 bg-opacity-70 backdrop-blur-lg">
+            <div className="fixed top-0 left-0 w-full shadow-sm z-10 bg-opacity-70 backdrop-blur-lg flex justify-between items-center px-4">
+                <button
+                    onClick={handleRedirectToHome}
+                    className="text-white hover:text-gray-200"
+                    disabled={!isClient}
+                    title="Volte para home"
+                >
+                    <IoHomeOutline size={26} />
+                </button>
                 <a
+                    rel="noopener noreferrer"
                     href="https://escoladanuvem.org/"
                     target="_blank"
-                    rel="noopener noreferrer"
                 >
                     <Image
                         src="/logo-edn.webp"
@@ -54,8 +74,17 @@ const RankingPage: React.FC = () => {
                         width={60}
                         height={60}
                         objectFit="contain"
+                        className="text-black"
                     />
                 </a>
+                <div className="relative flex">
+                    <button
+                        className="text-white p-1 rounded hover:tooltip-hover"
+                        title="Tirar uma captura de tela"
+                    >
+                        <RiScreenshot2Line size={28} />
+                    </button>
+                </div>
             </div>
 
             <div className="mt-14 flex flex-col items-center justify-center w-full pl-8 pr-8">
