@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import RankingChart from "../../components/RankingChart";
 import Image from "next/image";
@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { AiOutlineLoading } from "react-icons/ai";
 import { RiScreenshot2Line } from "react-icons/ri";
 import { IoHomeOutline } from "react-icons/io5";
+import html2canvas from "html2canvas";
 
 interface Participant {
     name: string;
@@ -23,6 +24,7 @@ const RankingPage: React.FC = () => {
     const teacherName = searchParams.get("teacherName") || "";
     const topN = searchParams.get("topN") || "";
     const participantsData = searchParams.get("participants");
+    const chartRef = useRef<HTMLDivElement>(null);
 
     const participants: Participant[] = participantsData
         ? JSON.parse(decodeURIComponent(participantsData))
@@ -34,6 +36,25 @@ const RankingPage: React.FC = () => {
             setLoading(false);
         }, 2000);
     }, []);
+
+    const handleScreenshot = async () => {
+        if (chartRef.current) {
+            try {
+                const canvas = await html2canvas(chartRef.current, {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                });
+                const image = canvas.toDataURL("image/png");
+                const link = document.createElement("a");
+                link.href = image;
+                link.download = "ranking_screenshot.png";
+                link.click();
+            } catch (error) {
+                console.error("Erro ao gerar screenshot:", error);
+            }
+        }
+    };
 
     if (loading) {
         return (
@@ -57,7 +78,7 @@ const RankingPage: React.FC = () => {
             <div className="fixed top-0 left-0 w-full shadow-sm z-10 bg-opacity-70 backdrop-blur-lg flex justify-between items-center px-4">
                 <button
                     onClick={handleRedirectToHome}
-                    className="text-white hover:text-gray-200"
+                    className="text-white rounded p-1 hover:bg-[#445F6F]"
                     disabled={!isClient}
                     title="Volte para home"
                 >
@@ -79,7 +100,8 @@ const RankingPage: React.FC = () => {
                 </a>
                 <div className="relative flex">
                     <button
-                        className="text-white p-1 rounded hover:tooltip-hover"
+                        onClick={handleScreenshot}
+                        className="text-white p-1 rounded hover:tooltip-hover hover:bg-[#445F6F]"
                         title="Tirar uma captura de tela"
                     >
                         <RiScreenshot2Line size={28} />
@@ -89,6 +111,7 @@ const RankingPage: React.FC = () => {
 
             <div className="mt-14 flex flex-col items-center justify-center w-full pl-8 pr-8">
                 <section
+                    ref={chartRef}
                     className="relative w-full max-w-full px-5 py-8 mb-20 rounded-lg shadow-lg flex flex-col items-center bg-[#DFDBE5] bg-opacity-90"
                     style={{
                         backgroundColor: "#0ab2d6",
