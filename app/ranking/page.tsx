@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import RankingChart from "../../components/RankingChart";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { AiOutlineLoading } from "react-icons/ai";
 import { RiScreenshot2Line } from "react-icons/ri";
@@ -84,20 +83,10 @@ const RankingPage: React.FC = () => {
                 >
                     <IoHomeOutline size={26} />
                 </button>
-                <a
-                    rel="noopener noreferrer"
-                    href="https://escoladanuvem.org/"
-                    target="_blank"
-                >
-                    <Image
-                        src="/logo-edn.webp"
-                        alt="Escola da Nuvem Logo"
-                        width={60}
-                        height={60}
-                        objectFit="contain"
-                        className="text-black"
-                    />
-                </a>
+                <div className="font-serif text-xl text-white underline underline-offset-[6px] decoration-blue-300 decoration-2">
+                    Ranking AWS re:Start
+                </div>
+
                 <div className="relative flex">
                     <button
                         onClick={handleScreenshot}
